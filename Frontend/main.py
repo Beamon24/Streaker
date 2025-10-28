@@ -1,15 +1,16 @@
 import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import ObjectProperty
 
 kivy.require('2.0.0')
 
-class MainPage(BoxLayout):
+class MainPage(Screen):
     habit_name_input = ObjectProperty(None)
     liste_habitude = ObjectProperty(None)
 
-    def __init__(self, **kwargs):
+    def __init__(self,**kwargs):
         super(MainPage, self).__init__(**kwargs)
         self.liste = []
 
@@ -27,10 +28,15 @@ class MainPage(BoxLayout):
         else:
             print("Le champ d'habitude est vide. Rien n'a été ajouté.")
 
+class SettingsScreen(Screen):
+    pass
+
+class HabitTrackerManager(ScreenManager):
+    pass
 
 class StreakerApp(App):
     def build(self):
-        return MainPage()
+        return HabitTrackerManager()
 
 
 if __name__ == "__main__":

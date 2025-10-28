@@ -1,10 +1,16 @@
-# streaker.kv ou main.kv
-
 <MainPage>:
+    name: 'mainpage'
+
     # --- Liaison des identifiants (ID) aux propriétés (ObjectProperty) en Python ---
     habit_name_input: habit_name_input
     liste_habitude: liste_habitude
     
+    canvas.before:
+        Rectangle:
+            source: 'Design/Menu.png' 
+            pos: self.pos
+            size: self.size
+       
     BoxLayout:
         orientation: "vertical"
         padding: '10dp'
@@ -48,4 +54,22 @@
                 size_hint_y: 1.0    
                 valign: 'top'        
                 halign: 'left'       
-                text_size: self.size 
+                text_size: self.size
+            Button:
+                text: "Settings"
+                on_release: app.root.current = 'parametres'
+
+<SettingsScreen>:
+    name: 'parametres'
+    
+    BoxLayout:
+        Label:
+            text: "Paramètres de l'application"
+        Button:
+            text: "Aller à l'accueil"
+            on_release: app.root.current = 'mainpage'
+
+
+<HabitTrackerManager>:
+    MainPage:
+    SettingsScreen:
