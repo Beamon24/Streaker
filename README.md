@@ -27,7 +27,7 @@ Il est fortement recommandé d'utiliser un environnement virtuel.
   cd streaker
 
 2. Configuration de l'Environnement
-  # Crée et active l'environnement virtuel (méthode Linux/WSL)
+Crée et active l'environnement virtuel (méthode Linux/WSL)
   python3 -m venv venv
   source venv/bin/activate
 (Si vous êtes sur Windows PowerShell : .\venv\Scripts\activate)
@@ -43,13 +43,13 @@ Ceci lance l'application directement sur votre PC pour un développement rapide 
 5. Lancement sur Android (Compilation APK)
 Briefcase gère la compilation vers Android. Assurez-vous d'avoir le SDK et le NDK Android installés
 (Briefcase vous guidera).
-  # Crée le projet Android
+Crée le projet Android
   briefcase create android
   
-  # Construit l'APK
+Construit l'APK
   briefcase build android
   
-  # Installe et lance sur un émulateur ou un appareil connecté
+Installe et lance sur un émulateur ou un appareil connecté
   briefcase run android
 
 🤝 Collaboration (Développeurs Alexis & Beamon24)
