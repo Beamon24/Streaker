@@ -11,6 +11,7 @@ L'objectif principal est de fournir une interface utilisateur native simple (gr�
 Technologie Frontend: Toga (BeeWare)  
 Langage Backend: Python 3.x  
 État du Développement: En cours (Phase de structure d'interface et de connexion au modèle)  
+Tuto apprendre BeeWare : https://youtu.be/FhDJniaFQ0M?si=x-dFG77PmGX_avn9  
 
 🛠️ Stack Technique  
 Langage : Python 3.x  
