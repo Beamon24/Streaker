@@ -1,79 +1,119 @@
 """Application de développement personnel"""
 import toga
-from toga.style.pack import COLUMN, ROW, Pack
-from toga import Label, TextInput, Button
+from toga.style import Pack
+from toga.style.pack import COLUMN, ROW, CENTER, BOLD, ITALIC, RIGHT
 
 class Streaker(toga.App):
-    # Liste interne pour simuler le stockage des habitudes (comme self.liste en Kivy)
-    liste_habitudes = []
+    # Stockage de la référence du champ d'entrée
+    input_field = None 
+    main_window = None
+    
+    # Liste interne des habitudes (simulées)
+    habits_data = [
+        {"id": 1, "text": "Lire 15 minutes", "done": False},
+        {"id": 2, "text": "Boire 2L d'eau", "done": True},
+        {"id": 3, "text": "Méditer 5 minutes", "done": False},
+    ]
+
+    # --- MÉTHODES DE NAVIGATION ET D'INTERACTION (Doivent être dans la classe!) ---
+    
+    def show_home(self, command): # <-- Cette méthode DOIT exister
+        """Affiche l'écran principal des habitudes."""
+        self.main_window.content = self._create_home_content()
+
+    def show_settings(self, command): # <-- Cette méthode DOIT exister
+        """Affiche l'écran des paramètres."""
+        self.main_window.content = toga.Label(
+            "Écran des Paramètres (À développer)", 
+            style=Pack(margin=50, font_size=20)
+        )
+    
+    def add_habit(self, widget): # <-- Cette méthode DOIT exister
+        """Ajoute une habitude à la liste et met à jour l'affichage."""
+        nom_habitude = self.input_field.value.strip() 
+        
+        if nom_habitude:
+            self.habits_data.append({"id": len(self.habits_data) + 1, "text": nom_habitude, "done": False})
+            self.input_field.value = ""
+            self.main_window.content = self._create_home_content()
+        else:
+            self.main_window.info_dialog('Erreur', "Veuillez saisir le nom de l'habitude.")
+
+    # --- MÉTHODE DE CONSTRUCTION DU CONTENU DE L'ÉCRAN ---
+    
+    def _create_home_content(self): # <-- Cette méthode DOIT exister
+        """Construit et retourne le layout de l'écran d'accueil."""
+        # Note: Cette méthode n'est pas censée être appelée directement par l'utilisateur, 
+        # d'où l'usage du préfixe "_"
+        BROWN_COLOR = "#5C4033" 
+        MARBLE_BG = "#F5F5DC" 
+
+        # --- Widgets pour l'interaction ---
+        # NOTE: self.input_field doit être défini ici
+        self.input_field = toga.TextInput(
+            placeholder="Nouvelle habitude...",
+            style=Pack(flex=1, margin_right=5)
+        )
+        
+        add_button = toga.Button(
+            "Ajouter",
+            on_press=self.add_habit,
+            style=Pack(width=100)
+        )
+
+        input_container = toga.Box(
+            style=Pack(direction=ROW, margin=10, background_color=MARBLE_BG),
+            children=[self.input_field, add_button]
+        )
+        
+        # --- Affichage de la Liste ---
+        data_rows = []
+        for item in self.habits_data:
+            status = "✅" if item['done'] else "☐"
+            data_rows.append((status, item['text']))
+
+        habits_table = toga.Table(
+            headings=["Statut", "Habitude"], 
+            data=data_rows,
+            style=Pack(flex=1, margin=(0, 10, 10, 10))
+        )
+        
+        content_box = toga.Box(
+            style=Pack(direction=COLUMN, background_color="#FFFFFF", margin=15, flex=1),
+            children=[habits_table]
+        )
+        
+        title_label = toga.Label(
+            "Mes Habitudes",
+            style=Pack(font_size=24, font_weight=BOLD, color=BROWN_COLOR, margin=(50, 20, 10, 20), text_align=CENTER)
+        )
+        
+        home_content = toga.Box(
+            style=Pack(direction=COLUMN, background_color=MARBLE_BG, flex=1, align_items=CENTER),
+            children=[title_label, content_box, input_container]
+        )
+        
+        return home_content
+        
+    # --- MÉTHODE DE DÉMARRAGE PRINCIPALE ---
     
     def startup(self):
-        # -------------------- 1. Déclaration des Widgets --------------------
-        
-        # Champ de saisie pour la nouvelle habitude
-        self.habit_input = TextInput(
-            placeholder="Nom de l’habitude (ex: Boire 2L d'eau)",
-            style=Pack(flex=1) # Permet au champ de prendre l'espace disponible
-        )
-        
-        # Label pour afficher la liste des habitudes
-        self.list_label = Label(
-            "Appuyez sur 'Ajouter' pour commencer le suivi.",
-            style=Pack(flex=1, padding_top=10) # Utilise flex=1 pour occuper l'espace
-        )
-
-        # Bouton d'ajout
-        add_button = Button(
-            "Ajouter",
-            on_press=self.add_habit, # Lien vers la méthode Python
-            style=Pack(padding_left=5)
-        )
-        
-        # -------------------- 2. Structure du Layout --------------------
-        
-        # A. Conteneur pour la saisie et le bouton (Disposition Horizontale - ROW)
-        input_container = toga.Box(
-            style=Pack(direction=ROW, padding=10),
-            children=[
-                self.habit_input,
-                add_button
-            ]
-        )
-        
-        # B. Conteneur Principal (Disposition Verticale - COLUMN)
-        main_box = toga.Box(
-            style=Pack(direction=COLUMN),
-            children=[
-                input_container,
-                self.list_label
-            ]
-        )
-
-        # -------------------- 3. Fenêtre Principale --------------------
+        # Création de la main_window pour que les Commandes fonctionnent
         self.main_window = toga.MainWindow(title=self.formal_name)
-        self.main_window.content = main_box
+        
+        # Le contenu initial est créé
+        home_content = self._create_home_content()
+        self.main_window.content = home_content
+        
+        # Déclaration et ajout des Commandes de navigation
+        self.commands.add(
+            toga.Command(self.show_home, text="Habitudes", tooltip="Mes Habitudes", icon=toga.Icon.DEFAULT_ICON),
+            toga.Command(self.show_settings, text="Paramètres", tooltip="Paramètres", icon=toga.Icon.DEFAULT_ICON)
+        )
+
         self.main_window.show()
 
 
-    # -------------------- 4. Logique d'Interaction --------------------
-    def add_habit(self, widget):
-        """Méthode appelée lors du clic sur le bouton 'Ajouter'."""
-        
-        nom_habitude = self.habit_input.value.strip() # En Toga, le texte est dans .value
-        
-        if nom_habitude:
-            # 1. Ajout à la liste interne
-            self.liste_habitudes.append(nom_habitude)
-            
-            # 2. Mise à jour du Label
-            texte_a_afficher = "\n".join(self.liste_habitudes)
-            self.list_label.text = "Vos habitudes :\n" + texte_a_afficher
-            
-            # 3. Effacer le champ de saisie
-            self.habit_input.value = ""
-        else:
-            print("Le champ d'habitude est vide. Rien n'a été ajouté.")
-
-
 def main():
-    return Streaker()
+    # S'assurer que le nom formel est passé pour le titre de la fenêtre.
+    return Streaker('Streaker', 'com.simon.streaker')
